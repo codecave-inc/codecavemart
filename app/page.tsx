@@ -1,3 +1,12 @@
+import Link from "next/link";
+import { getProducts } from "@/lib/get-products";
+import ProductCard from "@/components/ProductCard";
+
+export default async function Home() {
+  const { products } = await getProducts();
+
+  return (
+    <div>
       <section className="relative overflow-hidden border-b border-outline-variant">
         <div className="max-w-7xl mx-auto px-6 py-16 md:py-32 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
           <div className="max-w-xl">
@@ -29,3 +38,25 @@
           </div>
         </div>
       </section>
+
+      <section className="max-w-7xl mx-auto px-6 py-16">
+        <div className="flex items-baseline justify-between mb-8">
+          <h2 className="font-display text-2xl md:text-3xl font-semibold text-on-surface">
+            Picked for you
+          </h2>
+          <Link
+            href="/products"
+            className="text-xs uppercase tracking-widest text-secondary-fixed-dim hover:underline"
+          >
+            View all →
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.slice(0, 8).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
