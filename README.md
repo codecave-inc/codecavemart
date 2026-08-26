@@ -95,18 +95,34 @@ and we can wire up Stripe or Paystack next.
 
 ## What's built vs. what's next
 
-Built in this pass (customer storefront):
-- Home, product listing (with category filter), product detail
-- Cart (saved in the browser) and checkout (writes to Supabase)
-- Order confirmation / tracking page
+Built so far:
+- **Customer storefront** — home, product listing (with category filter),
+  product detail, cart, checkout (writes to Supabase), order confirmation
+- **Merchant dashboard** — merchant signup/login (Supabase Auth), a
+  dashboard with revenue/units/orders stats and an activity feed, product
+  management (list/add/edit/delete, scoped to each merchant via Row Level
+  Security), and an orders view showing orders containing that merchant's
+  products
 
-Not built yet (from your design files) — say the word when you want to
-tackle one of these next:
-- Merchant dashboard (sellers managing their own products/orders)
+Not built yet — say the word when you want to tackle one of these next:
 - Admin moderation panel
 - AI co-pilot widget on the product page
-- Customer accounts / login (so "My Orders" shows your real history)
+- Customer accounts / login for shoppers (so "My Orders" shows real history)
 - Real payments (Stripe/Paystack)
+
+### Trying the merchant dashboard
+
+1. Visit `/merchant/signup` on your live site, create a merchant account
+   (business name, email, password).
+2. You'll land on `/merchant/dashboard`. Go to **Products → + Add product**
+   to list something.
+3. Once it's listed, it shows up in the regular shop for customers to buy.
+4. After a purchase, check **Dashboard** and **Orders** in the merchant
+   area — you'll see real revenue and order data pulled from Supabase.
+
+Each merchant only ever sees and edits their own products/orders — that's
+enforced at the database level (Supabase Row Level Security), not just
+hidden in the UI.
 
 ## Local development (optional)
 

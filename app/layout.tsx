@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import SiteChrome from "@/components/SiteChrome";
 
 export const metadata: Metadata = {
   title: "Codecave Mart",
@@ -25,8 +25,7 @@ export default function RootLayout({
       <body className="bg-background text-on-background min-h-screen antialiased">
         <CartProvider>
           <Header />
-          <main className="pt-20">{children}</main>
-          <Footer />
+          <SiteChrome>{children}</SiteChrome>
         </CartProvider>
       </body>
     </html>

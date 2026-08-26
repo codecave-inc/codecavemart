@@ -36,8 +36,16 @@ export default function Footer() {
             Sell on Codecave
           </p>
           <ul className="space-y-2 text-sm text-on-surface-variant">
-            <li>Become a merchant</li>
-            <li>Merchant dashboard</li>
+            <li>
+              <a href="/merchant/signup" className="hover:text-secondary-fixed-dim">
+                Become a merchant
+              </a>
+            </li>
+            <li>
+              <a href="/merchant/dashboard" className="hover:text-secondary-fixed-dim">
+                Merchant dashboard
+              </a>
+            </li>
           </ul>
         </div>
       </div>

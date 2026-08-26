@@ -74,3 +74,63 @@ values
   ('terminal-canvas-tote', 'Terminal Canvas Tote', 'Waxed canvas, laptop sleeve built in', 'Waxed 16oz canvas tote with a padded 14" laptop sleeve, brass hardware, and a hidden zip pocket.', 8800, null, 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&q=80', 'Bags', 'Fieldwork Supply'),
   ('nomad-monitor-stand', 'Nomad Monitor Stand', 'Solid ash, packs flat', 'A solid ash monitor riser that knocks down flat for travel. Rated to 35lb.', 13500, 15900, 'https://images.unsplash.com/photo-1616627561950-9f746e330187?w=800&q=80', 'Desk', 'Northbench Co.')
 on conflict (slug) do nothing;
+
+-- ─────────────────────────────────────────────────────────────
+-- Merchant dashboard — accounts, product ownership, order access
+-- Added when building the merchant dashboard feature.
+-- ─────────────────────────────────────────────────────────────
+
+create table if not exists merchants (
+  id uuid primary key references auth.users(id) on delete cascade,
+  business_name text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table merchants enable row level security;
+
+create policy "Merchant can read own profile"
+  on merchants for select
+  using (auth.uid() = id);
+
+create policy "Merchant can update own profile"
+  on merchants for update
+  using (auth.uid() = id);
+
+create policy "Anyone can create their own merchant profile"
+  on merchants for insert
+  with check (auth.uid() = id);
+
+alter table products add column if not exists merchant_id uuid references merchants(id);
+
+create policy "Merchant can insert own products"
+  on products for insert
+  with check (auth.uid() = merchant_id);
+
+create policy "Merchant can update own products"
+  on products for update
+  using (auth.uid() = merchant_id);
+
+create policy "Merchant can delete own products"
+  on products for delete
+  using (auth.uid() = merchant_id);
+
+create policy "Merchant can read order_items for own products"
+  on order_items for select
+  using (
+    exists (
+      select 1 from products
+      where products.id = order_items.product_id
+      and products.merchant_id = auth.uid()
+    )
+  );
+
+create policy "Merchant can read orders containing own products"
+  on orders for select
+  using (
+    exists (
+      select 1 from order_items
+      join products on products.id = order_items.product_id
+      where order_items.order_id = orders.id
+      and products.merchant_id = auth.uid()
+    )
+  );
