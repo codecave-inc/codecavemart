@@ -1,22 +1,13 @@
-import Link from "next/link";
-import { getProducts } from "@/lib/get-products";
-import ProductCard from "@/components/ProductCard";
-
-export default async function Home() {
-  const { products } = await getProducts();
-
-  return (
-    <div>
       <section className="relative overflow-hidden border-b border-outline-variant">
-        <div className="max-w-7xl mx-auto px-6 py-24 md:py-32 grid md:grid-cols-2 gap-12 items-center">
-          <div>
+        <div className="max-w-7xl mx-auto px-6 py-16 md:py-32 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+          <div className="max-w-xl">
             <p className="text-xs uppercase tracking-[0.2em] text-secondary-fixed-dim mb-4">
               New season / Digital craftsmanship
             </p>
-            <h1 className="font-display text-4xl md:text-6xl font-bold leading-[1.05] text-on-surface mb-6">
+            <h1 className="font-display text-4xl md:text-6xl font-bold leading-tight md:leading-[1.05] text-on-surface mb-6">
               Gear for people who build things.
             </h1>
-            <p className="text-on-surface-variant text-base md:text-lg max-w-md mb-8">
+            <p className="text-on-surface-variant text-base md:text-lg leading-relaxed mb-8">
               Codecave Mart curates desk setups, carry, and fuel for
               developers and digital nomads — tested by the people who make
               your tools.
@@ -38,25 +29,3 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="flex items-baseline justify-between mb-8">
-          <h2 className="font-display text-2xl md:text-3xl font-semibold text-on-surface">
-            Picked for you
-          </h2>
-          <Link
-            href="/products"
-            className="text-xs uppercase tracking-widest text-secondary-fixed-dim hover:underline"
-          >
-            View all →
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.slice(0, 8).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
