@@ -23,8 +23,8 @@ export default function Header() {
           <Link href="/products?category=Desk" className="hover:text-secondary-fixed-dim transition-colors">
             Desk
           </Link>
-          <Link href="/orders" className="hover:text-secondary-fixed-dim transition-colors">
-            Orders
+          <Link href="/account/orders" className="hover:text-secondary-fixed-dim transition-colors">
+            Account
           </Link>
         </nav>
 

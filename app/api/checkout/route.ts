@@ -19,10 +19,14 @@ export async function POST(request: Request) {
 
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
+        customer_id: user?.id ?? null,
         customer_name: shipping.name,
         customer_email: shipping.email,
         shipping_address: `${shipping.address}, ${shipping.city} ${shipping.zip}`,

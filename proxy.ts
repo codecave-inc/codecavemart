@@ -41,9 +41,20 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  const isCustomerArea = path.startsWith("/account") &&
+    path !== "/account/login" &&
+    path !== "/account/signup";
+
+  if (isCustomerArea && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/account/login";
+    url.searchParams.set("redirectTo", path);
+    return NextResponse.redirect(url);
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ["/merchant/:path*"],
+  matcher: ["/merchant/:path*", "/account/:path*"],
 };

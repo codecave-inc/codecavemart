@@ -103,11 +103,15 @@ Built so far:
   management (list/add/edit/delete, scoped to each merchant via Row Level
   Security), and an orders view showing orders containing that merchant's
   products
+- **Customer accounts** — signup/login at `/account/signup` and
+  `/account/login`, order history at `/account/orders`, and a saved
+  shipping-details form that prefills checkout next time. Guest checkout
+  still works (no account required) — orders just aren't linked to a
+  login unless the customer signed in first.
 
 Not built yet — say the word when you want to tackle one of these next:
 - Admin moderation panel
 - AI co-pilot widget on the product page
-- Customer accounts / login for shoppers (so "My Orders" shows real history)
 - Real payments (Stripe/Paystack)
 
 ### Trying the merchant dashboard

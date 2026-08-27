@@ -134,3 +134,46 @@ create policy "Merchant can read orders containing own products"
       and products.merchant_id = auth.uid()
     )
   );
+
+-- ─────────────────────────────────────────────────────────────
+-- Customer accounts — order history, saved shipping info
+-- ─────────────────────────────────────────────────────────────
+
+alter table orders add column if not exists customer_id uuid references auth.users(id);
+
+create table if not exists customer_profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text,
+  address text,
+  city text,
+  zip text,
+  created_at timestamptz not null default now()
+);
+
+alter table customer_profiles enable row level security;
+
+create policy "Customer can read own profile"
+  on customer_profiles for select
+  using (auth.uid() = id);
+
+create policy "Customer can insert own profile"
+  on customer_profiles for insert
+  with check (auth.uid() = id);
+
+create policy "Customer can update own profile"
+  on customer_profiles for update
+  using (auth.uid() = id);
+
+create policy "Customer can read own orders"
+  on orders for select
+  using (auth.uid() = customer_id);
+
+create policy "Customer can read own order items"
+  on order_items for select
+  using (
+    exists (
+      select 1 from orders
+      where orders.id = order_items.order_id
+      and orders.customer_id = auth.uid()
+    )
+  );
