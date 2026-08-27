@@ -106,14 +106,6 @@
   --radius-lg: 0.25rem;
   --radius-xl: 0.5rem;
   --radius-full-alt: 0.75rem;
-
-  --spacing-base: 4px;
-  --spacing-xs: 8px;
-  --spacing-sm: 16px;
-  --spacing-md: 24px;
-  --spacing-lg: 48px;
-  --spacing-xl: 80px;
-  --spacing-gutter: 24px;
 }
 
 body {
