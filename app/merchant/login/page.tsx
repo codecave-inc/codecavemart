@@ -9,7 +9,7 @@ export default async function MerchantLoginPage({
   const { error, redirectTo } = await searchParams;
 
   return (
-    <div className="max-w-md mx-auto px-6 py-24">
+    <div className="max-w-lg mx-auto px-4 py-24">
       <h1 className="font-display text-3xl font-semibold text-on-surface mb-3">
         Merchant login
       </h1>

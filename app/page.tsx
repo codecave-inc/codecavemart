@@ -8,7 +8,7 @@ export default async function Home() {
   return (
     <div>
       <section className="relative overflow-hidden border-b border-outline-variant">
-        <div className="max-w-7xl mx-auto px-6 py-16 md:py-32 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 py-16 md:py-32 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
           <div className="max-w-xl">
             <p className="text-xs uppercase tracking-[0.2em] text-secondary-fixed-dim mb-4">
               New season / Digital craftsmanship
