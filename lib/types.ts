@@ -10,6 +10,8 @@ export type Product = {
   category: string | null;
   merchant_name: string | null;
   in_stock: boolean;
+  moderation_status?: "pending" | "approved" | "rejected";
+  rejection_reason?: string | null;
 };
 
 export type CartLine = {

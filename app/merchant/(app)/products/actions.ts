@@ -29,6 +29,7 @@ export async function createProduct(formData: FormData) {
     image_url: String(formData.get("image_url") || "") || null,
     category: String(formData.get("category") || "") || null,
     in_stock: formData.get("in_stock") === "on",
+    moderation_status: "pending",
   });
 
   if (error) {
@@ -54,6 +55,9 @@ export async function updateProduct(productId: string, formData: FormData) {
       image_url: String(formData.get("image_url") || "") || null,
       category: String(formData.get("category") || "") || null,
       in_stock: formData.get("in_stock") === "on",
+      // Edits go back through moderation before they're visible again.
+      moderation_status: "pending",
+      rejection_reason: null,
     })
     .eq("id", productId)
     .eq("merchant_id", merchant.id);

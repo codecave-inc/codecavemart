@@ -52,9 +52,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  const isAdminArea = path.startsWith("/admin") && path !== "/admin/login";
+
+  if (isAdminArea && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/login";
+    return NextResponse.redirect(url);
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ["/merchant/:path*", "/account/:path*"],
+  matcher: ["/merchant/:path*", "/account/:path*", "/admin/:path*"],
 };

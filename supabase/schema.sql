@@ -177,3 +177,46 @@ create policy "Customer can read own order items"
       and orders.customer_id = auth.uid()
     )
   );
+
+-- ─────────────────────────────────────────────────────────────
+-- Admin moderation — approve/reject newly listed products
+-- ─────────────────────────────────────────────────────────────
+
+create table if not exists admins (
+  id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+alter table admins enable row level security;
+
+create policy "Admin can read admin list"
+  on admins for select
+  using (auth.uid() = id);
+
+alter table products add column if not exists moderation_status text not null default 'pending';
+alter table products add column if not exists rejection_reason text;
+
+update products set moderation_status = 'approved' where moderation_status = 'pending';
+
+alter table products add constraint products_moderation_status_check
+  check (moderation_status in ('pending', 'approved', 'rejected'));
+
+create policy "Admin can read all products"
+  on products for select
+  using (exists (select 1 from admins where admins.id = auth.uid()));
+
+create policy "Admin can update all products"
+  on products for update
+  using (exists (select 1 from admins where admins.id = auth.uid()));
+
+create policy "Merchant can read own products regardless of status"
+  on products for select
+  using (auth.uid() = merchant_id);
+
+-- Tighten public storefront visibility to approved products only —
+-- replaces the original "Public can read products" (using true) policy.
+drop policy if exists "Public can read products" on products;
+
+create policy "Public can read approved products"
+  on products for select
+  using (moderation_status = 'approved');

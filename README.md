@@ -108,11 +108,31 @@ Built so far:
   shipping-details form that prefills checkout next time. Guest checkout
   still works (no account required) — orders just aren't linked to a
   login unless the customer signed in first.
+- **Admin moderation** — `/admin/login` (no public signup — admins are
+  added directly in the database, see below). New and edited product
+  listings go to a `pending` state and are hidden from the shop until an
+  admin approves them at `/admin/moderation`. Rejecting a listing requires
+  a reason, which shows up on the merchant's product list.
 
 Not built yet — say the word when you want to tackle one of these next:
-- Admin moderation panel
 - AI co-pilot widget on the product page
 - Real payments (Stripe/Paystack)
+
+### Admin accounts
+
+There's no signup form for admins on purpose — anyone could otherwise make
+themselves one. All 4 existing accounts on your Supabase project
+(`solomonisrael0012@gmail.com`, `support.codecave@gmail.com`,
+`arimiewisdom@gmail.com`, `ejisalem6@gmail.com`) were added as admins
+directly in the database. To add another admin later, either ask me to do
+it via the Supabase connector, or run this in the Supabase SQL Editor with
+their email:
+
+```sql
+insert into admins (id)
+select id from auth.users where email = 'someone@example.com';
+```
+
 
 ### Trying the merchant dashboard
 

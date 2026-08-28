@@ -37,7 +37,8 @@ export default async function MerchantProductsPage() {
               <tr className="text-xs uppercase tracking-widest text-on-surface-variant">
                 <th className="px-4 py-3 font-normal">Product</th>
                 <th className="px-4 py-3 font-normal">Price</th>
-                <th className="px-4 py-3 font-normal">Status</th>
+                <th className="px-4 py-3 font-normal">Stock</th>
+                <th className="px-4 py-3 font-normal">Moderation</th>
                 <th className="px-4 py-3 font-normal text-right">Actions</th>
               </tr>
             </thead>
@@ -60,6 +61,27 @@ export default async function MerchantProductsPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
+                    <div className="flex flex-col gap-1">
+                      <span
+                        className={`w-fit text-xs px-2 py-1 rounded-full capitalize ${
+                          product.moderation_status === "approved"
+                            ? "text-secondary-fixed-dim bg-secondary-container/20"
+                            : product.moderation_status === "rejected"
+                            ? "text-error bg-error-container/20"
+                            : "text-on-surface-variant bg-surface-variant/40"
+                        }`}
+                      >
+                        {product.moderation_status ?? "pending"}
+                      </span>
+                      {product.moderation_status === "rejected" &&
+                        product.rejection_reason && (
+                          <span className="text-[11px] text-on-surface-variant max-w-xs">
+                            {product.rejection_reason}
+                          </span>
+                        )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-4">
                       <Link
                         href={`/merchant/products/${product.id}/edit`}
@@ -76,6 +98,11 @@ export default async function MerchantProductsPage() {
           </table>
         </div>
       )}
+
+      <p className="text-xs text-on-surface-variant mt-6">
+        New listings and edits go through a quick review before they show up
+        in the shop.
+      </p>
     </div>
   );
 }
