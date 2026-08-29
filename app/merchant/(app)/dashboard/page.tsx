@@ -15,8 +15,9 @@ export default async function MerchantDashboardPage() {
   const { data: items } = productIds.length
     ? await supabase
         .from("order_items")
-        .select("*, orders(created_at)")
+        .select("*, orders!inner(created_at, payment_status)")
         .in("product_id", productIds)
+        .eq("orders.payment_status", "paid")
     : { data: [] as any[] };
 
   const revenueCents = (items ?? []).reduce(

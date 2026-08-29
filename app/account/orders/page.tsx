@@ -81,6 +81,19 @@ export default async function AccountOrdersPage({
                     <span className="text-xs px-2 py-1 rounded-full text-secondary-fixed-dim bg-secondary-container/20 capitalize">
                       {order.status}
                     </span>
+                    {order.payment_status !== "paid" && (
+                      <span
+                        className={`ml-2 text-xs px-2 py-1 rounded-full capitalize ${
+                          order.payment_status === "failed"
+                            ? "text-error bg-error-container/20"
+                            : "text-on-surface-variant bg-surface-variant/40"
+                        }`}
+                      >
+                        {order.payment_status === "failed"
+                          ? "Payment failed"
+                          : "Payment pending"}
+                      </span>
+                    )}
                   </div>
                   <ul className="text-sm text-on-surface-variant space-y-1 mb-3">
                     {order.order_items.map((item: any) => (

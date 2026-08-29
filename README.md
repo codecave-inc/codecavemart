@@ -113,12 +113,46 @@ Built so far:
   listings go to a `pending` state and are hidden from the shop until an
   admin approves them at `/admin/moderation`. Rejecting a listing requires
   a reason, which shows up on the merchant's product list.
+- **Flutterwave payments** — clicking "Place order" at checkout creates
+  the order (unpaid), then opens Flutterwave's payment modal for card,
+  bank transfer, or mobile money. Once paid, the server verifies the
+  transaction directly with Flutterwave before marking the order paid —
+  the browser's word alone is never trusted. Merchant revenue stats only
+  count paid orders.
 
-Not built yet — say the word when you want to tackle one of these next:
+Not built yet — say the word when you want to tackle it:
 - AI co-pilot widget on the product page
-- Real payments (Stripe/Paystack)
 
-### Admin accounts
+### Setting up Flutterwave
+
+1. Create a account at [flutterwave.com](https://flutterwave.com) if you
+   don't have one, and complete their KYC to accept live payments (you
+   can test everything before that's done using test keys).
+2. In the Flutterwave dashboard: **Settings → API Keys**. Copy your
+   **Public Key** and **Secret Key** (use the Test versions first).
+3. Add three new environment variables in Vercel (**Project Settings →
+   Environment Variables**), same place you added the Supabase ones:
+   - `NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY` → your Flutterwave public key
+   - `FLUTTERWAVE_SECRET_KEY` → your Flutterwave secret key (never
+     exposed to the browser — used only for server-side verification)
+   - `NEXT_PUBLIC_FLUTTERWAVE_CURRENCY` → e.g. `NGN` or `USD` (must be a
+     currency your Flutterwave account is enabled to accept)
+4. You also need one more Supabase value for payment verification —
+   `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Project Settings → API →
+   **service_role key**, further down the page from the anon key you
+   copied earlier). Add it in Vercel too. **This one is a secret** —
+   never put it in a `NEXT_PUBLIC_` variable or share it publicly; it
+   fully bypasses your database's security rules.
+5. Redeploy (Vercel → Deployments → Redeploy) so the new env vars take
+   effect.
+6. Test it: add something to cart, check out, and use one of
+   [Flutterwave's test cards](https://developer.flutterwave.com/docs/integration-guides/testing-helpers)
+   in test mode.
+
+Order records track `payment_status` (`pending` / `paid` / `failed`)
+separately from fulfillment `status`. An order only counts toward a
+merchant's revenue once `payment_status` is `paid`.
+
 
 There's no signup form for admins on purpose — anyone could otherwise make
 themselves one. All 4 existing accounts on your Supabase project

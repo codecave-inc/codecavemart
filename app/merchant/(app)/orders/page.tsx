@@ -14,7 +14,7 @@ export default async function MerchantOrdersPage() {
   const { data: items } = productIds.length
     ? await supabase
         .from("order_items")
-        .select("*, orders(id, customer_name, customer_email, status, created_at)")
+        .select("*, orders(id, customer_name, customer_email, status, payment_status, created_at)")
         .in("product_id", productIds)
         .order("created_at", { ascending: false })
     : { data: [] as any[] };
@@ -38,6 +38,7 @@ export default async function MerchantOrdersPage() {
                 <th className="px-4 py-3 font-normal">Order</th>
                 <th className="px-4 py-3 font-normal">Customer</th>
                 <th className="px-4 py-3 font-normal">Item</th>
+                <th className="px-4 py-3 font-normal">Payment</th>
                 <th className="px-4 py-3 font-normal">Status</th>
                 <th className="px-4 py-3 font-normal text-right">Amount</th>
               </tr>
@@ -53,6 +54,19 @@ export default async function MerchantOrdersPage() {
                   </td>
                   <td className="px-4 py-3 text-on-surface-variant">
                     {item.name} × {item.quantity}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full capitalize ${
+                        item.orders?.payment_status === "paid"
+                          ? "text-secondary-fixed-dim bg-secondary-container/20"
+                          : item.orders?.payment_status === "failed"
+                          ? "text-error bg-error-container/20"
+                          : "text-on-surface-variant bg-surface-variant/40"
+                      }`}
+                    >
+                      {item.orders?.payment_status ?? "pending"}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-xs px-2 py-1 rounded-full text-secondary-fixed-dim bg-secondary-container/20 capitalize">

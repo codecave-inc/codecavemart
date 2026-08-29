@@ -220,3 +220,21 @@ drop policy if exists "Public can read products" on products;
 create policy "Public can read approved products"
   on products for select
   using (moderation_status = 'approved');
+
+-- ─────────────────────────────────────────────────────────────
+-- Flutterwave payment tracking
+-- ─────────────────────────────────────────────────────────────
+
+alter table orders add column if not exists payment_status text not null default 'pending';
+alter table orders add column if not exists payment_reference text;
+alter table orders add column if not exists flw_transaction_id text;
+alter table orders add column if not exists customer_phone text;
+
+alter table orders add constraint orders_payment_status_check
+  check (payment_status in ('pending', 'paid', 'failed'));
+
+-- Deliberately NOT adding a public "anyone can update orders" policy —
+-- that would let anyone with the anon key mark any order as paid
+-- without ever paying. Payment verification updates go through the
+-- /api/verify-payment route using the Supabase SERVICE ROLE key
+-- (server-only secret, bypasses RLS), never the anon key.

@@ -14,6 +14,7 @@ export default async function OrderTrackingPage({
   let order: {
     id: string;
     status: string;
+    payment_status: string;
     total_cents: number;
     created_at: string;
     order_items: { name: string; quantity: number; price_cents: number }[];
@@ -37,17 +38,29 @@ export default async function OrderTrackingPage({
     ? Math.max(0, STEPS.findIndex((s) => s.toLowerCase() === order!.status))
     : 0;
 
+  const paymentPending = order && order.payment_status !== "paid";
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <p className="text-xs uppercase tracking-widest text-secondary-fixed-dim mb-2">
-        Order confirmed
+        {paymentPending ? "Payment pending" : "Order confirmed"}
       </p>
       <h1 className="font-display text-3xl font-semibold text-on-surface mb-2">
-        Thanks — it's on its way to being packed.
+        {paymentPending
+          ? "We haven't received payment for this order yet."
+          : "Thanks — it's on its way to being packed."}
       </h1>
       <p className="text-on-surface-variant text-sm mb-10">
         Order <span className="text-on-surface">#{id.slice(0, 8)}</span>
       </p>
+
+      {paymentPending && (
+        <div className="mb-10 border border-tertiary/40 bg-tertiary-container/10 rounded-xl p-4 text-sm text-on-surface">
+          {order!.payment_status === "failed"
+            ? "Payment failed or was not completed. You can return to checkout to try again — this order won't be fulfilled until it's paid."
+            : "Payment hasn't been confirmed yet. If you just paid, this can take a few seconds to update."}
+        </div>
+      )}
 
       <div className="flex items-center justify-between mb-12">
         {STEPS.map((step, i) => (
