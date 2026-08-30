@@ -119,9 +119,24 @@ Built so far:
   transaction directly with Flutterwave before marking the order paid —
   the browser's word alone is never trusted. Merchant revenue stats only
   count paid orders.
+- **AI Co-pilot** — a chat widget on every product page (bottom-right),
+  powered by the Groq API (Llama 3.3 70B). It's grounded in that specific
+  product's real name, price, and description, plus your actual catalog
+  for alternative suggestions — it won't invent specs or recommend
+  products that don't exist in your shop.
 
-Not built yet — say the word when you want to tackle it:
-- AI co-pilot widget on the product page
+Everything from the original design system is now built.
+
+### Setting up the AI Co-pilot
+
+1. Get an API key at [console.groq.com](https://console.groq.com)
+   (API Keys section).
+2. Add one environment variable in Vercel: `GROQ_API_KEY` → your key.
+   Server-only, never exposed to the browser.
+3. Redeploy. Each message sent through the widget calls the Groq API —
+   Groq's free tier covers a meaningful amount of usage, but check
+   console.groq.com for current limits/pricing if traffic picks up.
+
 
 ### Setting up Flutterwave
 

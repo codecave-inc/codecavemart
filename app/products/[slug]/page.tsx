@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/get-products";
 import { formatPrice } from "@/lib/format";
 import AddToCart from "@/components/AddToCart";
+import AICopilot from "@/components/AICopilot";
 
 export default async function ProductDetailPage({
   params,
@@ -9,7 +10,7 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { product } = await getProductBySlug(slug);
+  const { product, isDemo } = await getProductBySlug(slug);
 
   if (!product) notFound();
 
@@ -57,6 +58,11 @@ export default async function ProductDetailPage({
           </p>
         </div>
       </div>
+
+      {/* Demo mode has no real Supabase row for this product, so the
+          co-pilot (which looks the product up server-side) can't ground
+          itself — skip rendering it until Supabase is connected. */}
+      {!isDemo && <AICopilot productSlug={product.slug} productName={product.name} />}
     </div>
   );
 }

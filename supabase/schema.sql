@@ -238,3 +238,58 @@ alter table orders add constraint orders_payment_status_check
 -- without ever paying. Payment verification updates go through the
 -- /api/verify-payment route using the Supabase SERVICE ROLE key
 -- (server-only secret, bypasses RLS), never the anon key.
+
+-- ─────────────────────────────────────────────────────────────
+-- Fix: infinite recursion in orders/order_items RLS policies
+--
+-- "Merchant can read orders containing own products" (on orders) and
+-- "Customer can read own order items" (on order_items) each queried
+-- the OTHER table, so evaluating either one re-triggered the other in
+-- a loop (Postgres error 42P17). This broke every checkout silently —
+-- the app's fallback code treated it as "Supabase not ready" and
+-- quietly created a fake local order with no real payment.
+--
+-- Fix: move each cross-table check into a SECURITY DEFINER function,
+-- which looks up the answer directly instead of going back through
+-- the other table's RLS policies.
+-- ─────────────────────────────────────────────────────────────
+
+create or replace function public.order_belongs_to_merchant(target_order_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1
+    from order_items oi
+    join products p on p.id = oi.product_id
+    where oi.order_id = target_order_id
+    and p.merchant_id = auth.uid()
+  );
+$$;
+
+create or replace function public.order_belongs_to_customer(target_order_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from orders o
+    where o.id = target_order_id
+    and o.customer_id = auth.uid()
+  );
+$$;
+
+drop policy if exists "Merchant can read orders containing own products" on orders;
+create policy "Merchant can read orders containing own products"
+  on orders for select
+  using (public.order_belongs_to_merchant(id));
+
+drop policy if exists "Customer can read own order items" on order_items;
+create policy "Customer can read own order items"
+  on order_items for select
+  using (public.order_belongs_to_customer(order_id));
